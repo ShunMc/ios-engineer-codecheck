@@ -14,7 +14,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     var repogitories: [[String: Any]]=[]
     
-    var task: URLSessionTask?
+    var task: Task<Void, Error>?
     var selectedIndex: Int!
     
     override func viewDidLoad() {
@@ -32,26 +32,28 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         task?.cancel()
     }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { Task {
-        let searchWord = searchBar.text!
-        
-        if searchWord.count == 0 {
-            return;
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        task = Task {
+            let searchWord = searchBar.text!
+            
+            if searchWord.count == 0 {
+                return;
+            }
+            
+            let url = "https://api.github.com/search/repositories?q=\(searchWord)"
+            let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
+            guard let obj = try! JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                return
+            }
+            guard let items = obj["items"] as? [[String: Any]] else {
+                return
+            }
+            self.repogitories = items
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
         }
-        
-        let url = "https://api.github.com/search/repositories?q=\(searchWord)"
-        let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
-        guard let obj = try! JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            return
-        }
-        guard let items = obj["items"] as? [[String: Any]] else {
-            return
-        }
-        self.repogitories = items
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
-    }}
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier != "Detail" {
