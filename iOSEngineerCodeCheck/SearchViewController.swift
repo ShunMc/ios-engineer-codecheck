@@ -17,6 +17,8 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     var task: Task<Void, Error>?
     var selectedIndex: Int!
     
+    let searchUrl = "https://api.github.com/search/repositories?q=";
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.text = "GitHubのリポジトリを検索できるよー"
@@ -37,11 +39,13 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             let searchWord = searchBar.text!
             
             if searchWord.count == 0 {
-                return;
+                return
             }
             
-            let url = "https://api.github.com/search/repositories?q=\(searchWord)"
-            let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
+            guard let url = URL(string:"\(searchUrl)\(searchWord)") else {
+                return
+            }
+            let (data, _) = try await URLSession.shared.data(from: url)
             guard let obj = try! JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return
             }

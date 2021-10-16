@@ -43,11 +43,14 @@ class RepogitoryViewController: UIViewController {
         guard let owner = repo["owner"] as? [String: Any] else {
             return
         }
-        guard let imgURL = owner["avatar_url"] as? String else {
+        guard let imgURLStr = owner["avatar_url"] as? String else {
+            return
+        }
+        guard let imgURL = URL(string: imgURLStr) else {
             return
         }
         
-        let (data, _)  = try await URLSession.shared.data(from: URL(string: imgURL)!)
+        let (data, _)  = try await URLSession.shared.data(from: imgURL)
         let img = UIImage(data: data)
         DispatchQueue.main.async {
             self.thumbnailImageView.image = img
