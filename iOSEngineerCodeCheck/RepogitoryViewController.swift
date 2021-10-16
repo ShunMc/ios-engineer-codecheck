@@ -33,10 +33,12 @@ class RepogitoryViewController: UIViewController {
         watchersCountLabel.text = "\(repo["wachers_count"] as? Int ?? 0) watchers"
         forksCountLabel.text = "\(repo["forks_count"] as? Int ?? 0) forks"
         issuesCountLabel.text = "\(repo["open_issues_count"] as? Int ?? 0) open issues"
-        getImage()
+        Task{
+            try await getImage()
+        }
     }
     
-    func getImage() {
+    func getImage() async throws {
         let repo = searchVC.repogitories[searchVC.selectedIndex]
         
         repogitoryNameLabel.text = repo["full_name"] as? String
@@ -48,12 +50,11 @@ class RepogitoryViewController: UIViewController {
             return
         }
         
-        URLSession.shared.dataTask(with: URL(string: imgURL)!) { (data, res, err) in
-            let img = UIImage(data: data!)!
-            DispatchQueue.main.async {
-                self.thumbnailImageView.image = img
-            }
-        }.resume()
+        let (data, _)  = try await URLSession.shared.data(from: URL(string: imgURL)!)
+        let img = UIImage(data: data)
+        DispatchQueue.main.async {
+            self.thumbnailImageView.image = img
+        }
     }
     
 }

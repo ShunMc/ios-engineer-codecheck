@@ -36,7 +36,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         task?.cancel()
     }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { Task {
         searchWord = searchBar.text!
         
         if searchWord.count == 0 {
@@ -44,21 +44,18 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         }
         
         url = "https://api.github.com/search/repositories?q=\(searchWord!)"
-        task = URLSession.shared.dataTask(with: URL(string: url)!) { (data, res, err) in
-            guard let obj = try! JSONSerialization.jsonObject(with: data!) as? [String: Any] else {
-                return
-            }
-            guard let items = obj["items"] as? [[String: Any]] else {
-                return
-            }
-            self.repogitories = items
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+        let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
+        guard let obj = try! JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return
         }
-        // これ呼ばなきゃリストが更新されません
-        task?.resume()
-    }
+        guard let items = obj["items"] as? [[String: Any]] else {
+            return
+        }
+        self.repogitories = items
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }}
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Detail"{
