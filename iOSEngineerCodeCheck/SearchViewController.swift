@@ -54,10 +54,11 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     }}
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "Detail"{
-            let dst = segue.destination as! RepogitoryViewController
-            dst.searchVC = self
+        if segue.identifier != "Detail" {
+            return;
         }
+        let dst = segue.destination as! RepogitoryViewController
+        dst.searchVC = self
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
