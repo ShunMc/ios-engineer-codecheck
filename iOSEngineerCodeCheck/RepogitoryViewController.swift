@@ -13,9 +13,7 @@ class RepogitoryViewController: UIViewController {
     @IBOutlet weak var thumbnailImageView: UIImageView!
     
     @IBOutlet weak var repogitoryNameLabel: UILabel!
-    
     @IBOutlet weak var languageLabel: UILabel!
-    
     @IBOutlet weak var starsCountLabel: UILabel!
     @IBOutlet weak var watchersCountLabel: UILabel!
     @IBOutlet weak var forksCountLabel: UILabel!
@@ -27,7 +25,8 @@ class RepogitoryViewController: UIViewController {
         super.viewDidLoad()
         
         let repo = searchVC.repogitories[searchVC.selectedIndex]
-        
+
+        repogitoryNameLabel.text = repo["full_name"] as? String
         languageLabel.text = "Written in \(repo["language"] as? String ?? "")"
         starsCountLabel.text = "\(repo["stargazers_count"] as? Int ?? 0) stars"
         watchersCountLabel.text = "\(repo["wachers_count"] as? Int ?? 0) watchers"
@@ -40,8 +39,6 @@ class RepogitoryViewController: UIViewController {
     
     func getImage() async throws {
         let repo = searchVC.repogitories[searchVC.selectedIndex]
-        
-        repogitoryNameLabel.text = repo["full_name"] as? String
         
         guard let owner = repo["owner"] as? [String: Any] else {
             return
