@@ -42,7 +42,6 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             }
             let (data, _) = try await URLSession.shared.data(from: url)
             guard let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
-                print("error")
                 return
             }
             self.repogitories = repogitories.items
