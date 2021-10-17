@@ -40,7 +40,9 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             guard let url = URL(string:"\(searchUrl)\(searchWord)") else {
                 return
             }
-            let (data, _) = try await URLSession.shared.data(from: url)
+            guard let (data, _) = try? await URLSession.shared.data(from: url) else {
+                return
+            }
             guard let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
                 return
             }
@@ -55,7 +57,9 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         if segue.identifier != "Detail" {
             return;
         }
-        let dst = segue.destination as! RepogitoryViewController
+        guard let dst = segue.destination as? RepogitoryViewController else {
+            return
+        }
         dst.searchVC = self
     }
     
