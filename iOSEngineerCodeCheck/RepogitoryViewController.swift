@@ -25,7 +25,7 @@ class RepogitoryViewController: UIViewController {
         super.viewDidLoad()
         
         let repo = searchVC.repogitories[searchVC.selectedIndex]
-
+        
         repogitoryNameLabel.text = repo.full_name
         if let language = repo.language
         {
