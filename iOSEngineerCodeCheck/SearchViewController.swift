@@ -12,7 +12,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var repogitories: [[String: Any]]=[]
+    var repogitories: [Repogitory]=[]
     
     var task: Task<Void, Error>?
     var selectedIndex: Int!
@@ -46,13 +46,11 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
                 return
             }
             let (data, _) = try await URLSession.shared.data(from: url)
-            guard let obj = try! JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            guard let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
+                print("error")
                 return
             }
-            guard let items = obj["items"] as? [[String: Any]] else {
-                return
-            }
-            self.repogitories = items
+            self.repogitories = repogitories.items
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -74,8 +72,8 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         let repo = repogitories[indexPath.row]
-        cell.textLabel?.text = repo["full_name"] as? String ?? ""
-        cell.detailTextLabel?.text = repo["language"] as? String ?? ""
+        cell.textLabel?.text = repo.full_name
+        cell.detailTextLabel?.text = repo.language
         cell.tag = indexPath.row
         return cell
     }

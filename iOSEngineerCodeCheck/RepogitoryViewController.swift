@@ -26,12 +26,15 @@ class RepogitoryViewController: UIViewController {
         
         let repo = searchVC.repogitories[searchVC.selectedIndex]
 
-        repogitoryNameLabel.text = repo["full_name"] as? String
-        languageLabel.text = "Written in \(repo["language"] as? String ?? "")"
-        starsCountLabel.text = "\(repo["stargazers_count"] as? Int ?? 0) stars"
-        watchersCountLabel.text = "\(repo["wachers_count"] as? Int ?? 0) watchers"
-        forksCountLabel.text = "\(repo["forks_count"] as? Int ?? 0) forks"
-        issuesCountLabel.text = "\(repo["open_issues_count"] as? Int ?? 0) open issues"
+        repogitoryNameLabel.text = repo.full_name
+        if let language = repo.language
+        {
+            languageLabel.text = "Written in \(language)"
+        }
+        starsCountLabel.text = "\(repo.stargazers_count) stars"
+        watchersCountLabel.text = "\(repo.watchers_count) watchers"
+        forksCountLabel.text = "\(repo.forks_count) forks"
+        issuesCountLabel.text = "\(repo.open_issues_count) open issues"
         Task{
             try await getImage()
         }
@@ -39,14 +42,8 @@ class RepogitoryViewController: UIViewController {
     
     func getImage() async throws {
         let repo = searchVC.repogitories[searchVC.selectedIndex]
-        
-        guard let owner = repo["owner"] as? [String: Any] else {
-            return
-        }
-        guard let imgURLStr = owner["avatar_url"] as? String else {
-            return
-        }
-        guard let imgURL = URL(string: imgURLStr) else {
+        let owner = repo.owner
+        guard let imgURL = URL(string: owner.avatar_url) else {
             return
         }
         
