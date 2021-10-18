@@ -53,4 +53,10 @@ class RepogitoryViewController: UIViewController {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        self.thumbnailImageView.image = nil;
+        self.thumbnailImageView.layer.sublayers = nil;
+        self.thumbnailImageView = nil;
+    }
+    
 }
