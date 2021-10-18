@@ -36,8 +36,11 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             if searchWord.count == 0 {
                 return
             }
-            
-            guard let url = URL(string:"\(searchUrl)\(searchWord)") else {
+
+            guard let encodedWord = searchWord.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+                return
+            }
+            guard let url = URL(string:"\(searchUrl)\(encodedWord)") else {
                 return
             }
             guard let (data, _) = try? await URLSession.shared.data(from: url) else {
