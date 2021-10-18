@@ -24,11 +24,10 @@ class RepogitoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let repo = searchVC.repogitories[searchVC.selectedIndex]
+        let repo = searchVC.repogitory
         
         repogitoryNameLabel.text = repo.full_name
-        if let language = repo.language
-        {
+        if let language = repo.language {
             languageLabel.text = "Written in \(language)"
         }
         starsCountLabel.text = "\(repo.stargazers_count) stars"
@@ -41,7 +40,7 @@ class RepogitoryViewController: UIViewController {
     }
     
     func getImage() async throws {
-        let repo = searchVC.repogitories[searchVC.selectedIndex]
+        let repo = searchVC.repogitory
         let owner = repo.owner
         guard let imgURL = URL(string: owner.avatar_url) else {
             return
@@ -52,6 +51,12 @@ class RepogitoryViewController: UIViewController {
         DispatchQueue.main.async {
             self.thumbnailImageView.image = img
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        self.thumbnailImageView.image = nil;
+        self.thumbnailImageView.layer.sublayers = nil;
+        self.thumbnailImageView = nil;
     }
     
 }

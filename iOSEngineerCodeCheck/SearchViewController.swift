@@ -12,12 +12,17 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var repogitories: [Repogitory]=[]
+    private let searchUrl = "https://api.github.com/search/repositories?q=";
     
-    var task: Task<Void, Error>?
-    var selectedIndex: Int!
+    private var repogitories: [Repogitory]=[]
+    private var selectedIndex: Int!
+    private var task: Task<Void, Error>?
     
-    let searchUrl = "https://api.github.com/search/repositories?q=";
+    var repogitory: Repogitory {
+        get {
+            return repogitories[selectedIndex]
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,8 +41,11 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             if searchWord.count == 0 {
                 return
             }
-            
-            guard let url = URL(string:"\(searchUrl)\(searchWord)") else {
+
+            guard let encodedWord = searchWord.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+                return
+            }
+            guard let url = URL(string:"\(searchUrl)\(encodedWord)") else {
                 return
             }
             guard let (data, _) = try? await URLSession.shared.data(from: url) else {
@@ -55,7 +63,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier != "Detail" {
-            return;
+            return
         }
         guard let dst = segue.destination as? RepogitoryViewController else {
             return
@@ -72,7 +80,6 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         let repo = repogitories[indexPath.row]
         cell.textLabel?.text = repo.full_name
         cell.detailTextLabel?.text = repo.language
-        cell.tag = indexPath.row
         return cell
     }
     
