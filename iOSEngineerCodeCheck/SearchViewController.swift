@@ -12,20 +12,17 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var repogitories: [[String: Any]]=[]
+    var repogitories: [Repogitory]=[]
     
     var task: Task<Void, Error>?
     var selectedIndex: Int!
     
+    let searchUrl = "https://api.github.com/search/repositories?q=";
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        searchBar.text = "GitHubのリポジトリを検索できるよー"
+        searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
         searchBar.delegate = self
-    }
-    
-    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        searchBar.text = ""
-        return true
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -37,18 +34,19 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             let searchWord = searchBar.text!
             
             if searchWord.count == 0 {
-                return;
+                return
             }
             
-            let url = "https://api.github.com/search/repositories?q=\(searchWord)"
-            let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
-            guard let obj = try! JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            guard let url = URL(string:"\(searchUrl)\(searchWord)") else {
                 return
             }
-            guard let items = obj["items"] as? [[String: Any]] else {
+            guard let (data, _) = try? await URLSession.shared.data(from: url) else {
                 return
             }
-            self.repogitories = items
+            guard let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
+                return
+            }
+            self.repogitories = repogitories.items
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -59,7 +57,9 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         if segue.identifier != "Detail" {
             return;
         }
-        let dst = segue.destination as! RepogitoryViewController
+        guard let dst = segue.destination as? RepogitoryViewController else {
+            return
+        }
         dst.searchVC = self
     }
     
@@ -70,8 +70,8 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         let repo = repogitories[indexPath.row]
-        cell.textLabel?.text = repo["full_name"] as? String ?? ""
-        cell.detailTextLabel?.text = repo["language"] as? String ?? ""
+        cell.textLabel?.text = repo.full_name
+        cell.detailTextLabel?.text = repo.language
         cell.tag = indexPath.row
         return cell
     }
