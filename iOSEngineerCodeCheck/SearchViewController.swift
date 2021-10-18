@@ -58,7 +58,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier != "Detail" {
-            return;
+            return
         }
         guard let dst = segue.destination as? RepogitoryViewController else {
             return

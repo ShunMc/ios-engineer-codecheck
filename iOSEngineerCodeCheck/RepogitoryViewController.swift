@@ -27,8 +27,7 @@ class RepogitoryViewController: UIViewController {
         let repo = searchVC.repogitories[searchVC.selectedIndex]
         
         repogitoryNameLabel.text = repo.full_name
-        if let language = repo.language
-        {
+        if let language = repo.language {
             languageLabel.text = "Written in \(language)"
         }
         starsCountLabel.text = "\(repo.stargazers_count) stars"
