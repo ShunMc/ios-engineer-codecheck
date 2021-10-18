@@ -12,12 +12,17 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var repogitories: [Repogitory]=[]
+    private let searchUrl = "https://api.github.com/search/repositories?q=";
     
-    var task: Task<Void, Error>?
-    var selectedIndex: Int!
+    private var repogitories: [Repogitory]=[]
+    private var selectedIndex: Int!
+    private var task: Task<Void, Error>?
     
-    let searchUrl = "https://api.github.com/search/repositories?q=";
+    var repogitory: Repogitory {
+        get {
+            return repogitories[selectedIndex]
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,7 +80,6 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         let repo = repogitories[indexPath.row]
         cell.textLabel?.text = repo.full_name
         cell.detailTextLabel?.text = repo.language
-        cell.tag = indexPath.row
         return cell
     }
     
