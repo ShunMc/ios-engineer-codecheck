@@ -24,7 +24,9 @@ class RepositoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let repo = searchVC.repository
+        guard let repo = searchVC.repository else {
+            return
+        }
         
         repositoryNameLabel.text = repo.full_name
         if let language = repo.language {
@@ -40,7 +42,10 @@ class RepositoryViewController: UIViewController {
     }
     
     func getImage() async throws {
-        let repo = searchVC.repository
+        guard let repo = searchVC.repository else {
+            return
+        }
+        
         let owner = repo.owner
         guard let imgURL = URL(string: owner.avatar_url) else {
             return

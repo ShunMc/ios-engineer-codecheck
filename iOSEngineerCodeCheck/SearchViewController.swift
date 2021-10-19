@@ -14,13 +14,17 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     private let searchUrl = "https://api.github.com/search/repositories?q=";
     
-    private var repositories: [Repository]=[]
-    private var selectedIndex: Int!
+    private var repositoryPresenter: RepositoryPresenter = RepositoryPresenter()
+    private var selectedIndex: Int?
     private var task: Task<Void, Error>?
     
-    var repository: Repository {
+    var repository: Repository? {
         get {
-            return repositories[selectedIndex]
+            guard let index = selectedIndex else
+            {
+                return nil
+            }
+            return repositoryPresenter.repositories[index]
         }
     }
     
@@ -37,19 +41,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         task = Task {
             let searchWord = searchBar.text!
-            
-            if searchWord.count == 0 {
-                return
-            }
-            
-            guard let encodedWord = searchWord.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
-                  let url = URL(string:"\(searchUrl)\(encodedWord)"),
-                  let (data, _) = try? await URLSession.shared.data(from: url),
-                  let repositories = try? JSONDecoder().decode(Repositories.self, from: data) else {
-                      return
-                  }
-            
-            self.repositories = repositories.items
+            await repositoryPresenter.request(searchWord)
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -67,12 +59,12 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repositories.count
+        return repositoryPresenter.repositories.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        let repo = repositories[indexPath.row]
+        let repo = repositoryPresenter.repositories[indexPath.row]
         cell.textLabel?.text = repo.full_name
         cell.detailTextLabel?.text = repo.language
         return cell
