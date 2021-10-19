@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		2478F362271B30F000620766 /* GitHubRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2478F361271B30F000620766 /* GitHubRepository.swift */; };
 		2478F366271F051A00620766 /* RepositoryPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2478F365271F051A00620766 /* RepositoryPresenter.swift */; };
+		2478F369271F12BF00620766 /* Instantiate in Frameworks */ = {isa = PBXBuildFile; productRef = 2478F368271F12BF00620766 /* Instantiate */; };
+		2478F36B271F12BF00620766 /* InstantiateStandard in Frameworks */ = {isa = PBXBuildFile; productRef = 2478F36A271F12BF00620766 /* InstantiateStandard */; };
 		BF0A658D244F2A3B00280FA6 /* RepositoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0A658C244F2A3B00280FA6 /* RepositoryViewController.swift */; };
 		BFD945DF244DC5E80012785A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD945DE244DC5E80012785A /* AppDelegate.swift */; };
 		BFD945E1244DC5E80012785A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD945E0244DC5E80012785A /* SceneDelegate.swift */; };
@@ -62,6 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2478F36B271F12BF00620766 /* InstantiateStandard in Frameworks */,
+				2478F369271F12BF00620766 /* Instantiate in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +157,10 @@
 			dependencies = (
 			);
 			name = iOSEngineerCodeCheck;
+			packageProductDependencies = (
+				2478F368271F12BF00620766 /* Instantiate */,
+				2478F36A271F12BF00620766 /* InstantiateStandard */,
+			);
 			productName = iOSEngineerCodeCheck;
 			productReference = BFD945DB244DC5E80012785A /* iOSEngineerCodeCheck.app */;
 			productType = "com.apple.product-type.application";
@@ -225,6 +233,9 @@
 				Base,
 			);
 			mainGroup = BFD945D2244DC5E80012785A;
+			packageReferences = (
+				2478F367271F12BF00620766 /* XCRemoteSwiftPackageReference "Instantiate" */,
+			);
 			productRefGroup = BFD945DC244DC5E80012785A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -602,6 +613,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2478F367271F12BF00620766 /* XCRemoteSwiftPackageReference "Instantiate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tarunon/Instantiate";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2478F368271F12BF00620766 /* Instantiate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2478F367271F12BF00620766 /* XCRemoteSwiftPackageReference "Instantiate" */;
+			productName = Instantiate;
+		};
+		2478F36A271F12BF00620766 /* InstantiateStandard */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2478F367271F12BF00620766 /* XCRemoteSwiftPackageReference "Instantiate" */;
+			productName = InstantiateStandard;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BFD945D3244DC5E80012785A /* Project object */;
 }
