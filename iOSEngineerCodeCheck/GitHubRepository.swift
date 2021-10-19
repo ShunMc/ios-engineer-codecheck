@@ -1,5 +1,5 @@
 //
-//  GitHubRepogitory.swift
+//  GitHubRepository.swift
 //  iOSEngineerCodeCheck
 //
 //  Created by Matsunobu Shun on 2021/10/17.
@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct Repogitories: Decodable {
-    let items: [Repogitory]
+struct Repositories: Decodable {
+    let items: [Repository]
 }
 
-struct Repogitory: Decodable {
+struct Repository: Decodable {
     let full_name: String
     let language: String?
     let stargazers_count: Int

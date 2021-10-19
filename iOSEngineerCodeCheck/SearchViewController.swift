@@ -14,13 +14,13 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     private let searchUrl = "https://api.github.com/search/repositories?q=";
     
-    private var repogitories: [Repogitory]=[]
+    private var repositories: [Repository]=[]
     private var selectedIndex: Int!
     private var task: Task<Void, Error>?
     
-    var repogitory: Repogitory {
+    var repository: Repository {
         get {
-            return repogitories[selectedIndex]
+            return repositories[selectedIndex]
         }
     }
     
@@ -45,11 +45,11 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             guard let encodedWord = searchWord.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
                   let url = URL(string:"\(searchUrl)\(encodedWord)"),
                   let (data, _) = try? await URLSession.shared.data(from: url),
-                  let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
+                  let repositories = try? JSONDecoder().decode(Repositories.self, from: data) else {
                       return
                   }
             
-            self.repogitories = repogitories.items
+            self.repositories = repositories.items
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -60,19 +60,19 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         if segue.identifier != "Detail" {
             return
         }
-        guard let dst = segue.destination as? RepogitoryViewController else {
+        guard let dst = segue.destination as? RepositoryViewController else {
             return
         }
         dst.searchVC = self
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repogitories.count
+        return repositories.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        let repo = repogitories[indexPath.row]
+        let repo = repositories[indexPath.row]
         cell.textLabel?.text = repo.full_name
         cell.detailTextLabel?.text = repo.language
         return cell

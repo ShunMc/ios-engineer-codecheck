@@ -8,11 +8,11 @@
 
 import UIKit
 
-class RepogitoryViewController: UIViewController {
+class RepositoryViewController: UIViewController {
     
     @IBOutlet weak var thumbnailImageView: UIImageView!
     
-    @IBOutlet weak var repogitoryNameLabel: UILabel!
+    @IBOutlet weak var repositoryNameLabel: UILabel!
     @IBOutlet weak var languageLabel: UILabel!
     @IBOutlet weak var starsCountLabel: UILabel!
     @IBOutlet weak var watchersCountLabel: UILabel!
@@ -24,9 +24,9 @@ class RepogitoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let repo = searchVC.repogitory
+        let repo = searchVC.repository
         
-        repogitoryNameLabel.text = repo.full_name
+        repositoryNameLabel.text = repo.full_name
         if let language = repo.language {
             languageLabel.text = "Written in \(language)"
         }
@@ -40,7 +40,7 @@ class RepogitoryViewController: UIViewController {
     }
     
     func getImage() async throws {
-        let repo = searchVC.repogitory
+        let repo = searchVC.repository
         let owner = repo.owner
         guard let imgURL = URL(string: owner.avatar_url) else {
             return
