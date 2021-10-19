@@ -37,25 +37,27 @@ class RepositoryViewController: UIViewController {
         forksCountLabel.text = "\(repo.forks_count) forks"
         issuesCountLabel.text = "\(repo.open_issues_count) open issues"
         Task{
-            try await getImage()
+            guard let image = await getImage() else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.thumbnailImageView.image = image
+            }
         }
     }
     
-    func getImage() async throws {
+    func getImage() async -> UIImage? {
         guard let repo = searchVC.repository else {
-            return
+            return nil
         }
         
         let owner = repo.owner
-        guard let imgURL = URL(string: owner.avatar_url) else {
-            return
-        }
+        guard let imgURL = URL(string: owner.avatar_url),
+              let (data, _)  = try? await URLSession.shared.data(from: imgURL) else {
+                  return nil
+              }
         
-        let (data, _)  = try await URLSession.shared.data(from: imgURL)
-        let img = UIImage(data: data)
-        DispatchQueue.main.async {
-            self.thumbnailImageView.image = img
-        }
+        return UIImage(data: data)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
