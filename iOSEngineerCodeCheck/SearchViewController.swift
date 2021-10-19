@@ -35,17 +35,6 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier != "Detail" {
-            return
-        }
-        guard let dst = segue.destination as? RepositoryViewController,
-              let repository = sender as? Repository else {
-                  return
-              }
-        dst.repository = repository
-    }
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return repositoryPresenter.repositories.count
     }
@@ -59,7 +48,8 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "Detail", sender: repositoryPresenter.repositories[indexPath.row])
+        let vc = RepositoryViewController(with: repositoryPresenter.repositories[indexPath.row])
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
 }

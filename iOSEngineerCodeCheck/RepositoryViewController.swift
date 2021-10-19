@@ -7,8 +7,12 @@
 //
 
 import UIKit
+import Instantiate
+import InstantiateStandard
 
-class RepositoryViewController: UIViewController {
+class RepositoryViewController: UIViewController, StoryboardInstantiatable {
+    
+    typealias Dependency = Repository
     
     @IBOutlet weak var thumbnailImageView: UIImageView!
     
@@ -19,7 +23,11 @@ class RepositoryViewController: UIViewController {
     @IBOutlet weak var forksCountLabel: UILabel!
     @IBOutlet weak var issuesCountLabel: UILabel!
     
-    var repository: Repository!
+    private var repository: Repository!
+    
+    func inject(_ dependency: Repository) {
+        self.repository = dependency
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
