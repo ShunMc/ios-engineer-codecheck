@@ -12,8 +12,6 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    private let searchUrl = "https://api.github.com/search/repositories?q=";
-    
     private var repositoryPresenter: RepositoryPresenter = RepositoryPresenter()
     private var selectedIndex: Int?
     private var task: Task<Void, Error>?
