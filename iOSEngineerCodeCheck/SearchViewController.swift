@@ -41,19 +41,14 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
             if searchWord.count == 0 {
                 return
             }
-
-            guard let encodedWord = searchWord.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-                return
-            }
-            guard let url = URL(string:"\(searchUrl)\(encodedWord)") else {
-                return
-            }
-            guard let (data, _) = try? await URLSession.shared.data(from: url) else {
-                return
-            }
-            guard let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
-                return
-            }
+            
+            guard let encodedWord = searchWord.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
+                  let url = URL(string:"\(searchUrl)\(encodedWord)"),
+                  let (data, _) = try? await URLSession.shared.data(from: url),
+                  let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
+                      return
+                  }
+            
             self.repogitories = repogitories.items
             DispatchQueue.main.async {
                 self.tableView.reloadData()
