@@ -13,18 +13,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     
     private var repositoryPresenter: RepositoryPresenter = RepositoryPresenter()
-    private var selectedIndex: Int?
     private var task: Task<Void, Error>?
-    
-    var repository: Repository? {
-        get {
-            guard let index = selectedIndex else
-            {
-                return nil
-            }
-            return repositoryPresenter.repositories[index]
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,10 +39,11 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
         if segue.identifier != "Detail" {
             return
         }
-        guard let dst = segue.destination as? RepositoryViewController else {
-            return
-        }
-        dst.searchVC = self
+        guard let dst = segue.destination as? RepositoryViewController,
+              let repository = sender as? Repository else {
+                  return
+              }
+        dst.repository = repository
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -69,8 +59,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndex = indexPath.row
-        performSegue(withIdentifier: "Detail", sender: self)
+        performSegue(withIdentifier: "Detail", sender: repositoryPresenter.repositories[indexPath.row])
     }
     
 }

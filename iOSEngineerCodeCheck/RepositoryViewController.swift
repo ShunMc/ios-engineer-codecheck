@@ -19,12 +19,12 @@ class RepositoryViewController: UIViewController {
     @IBOutlet weak var forksCountLabel: UILabel!
     @IBOutlet weak var issuesCountLabel: UILabel!
     
-    var searchVC: SearchViewController!
+    var repository: Repository!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let repo = searchVC.repository else {
+        guard let repo = repository else {
             return
         }
         
@@ -47,7 +47,7 @@ class RepositoryViewController: UIViewController {
     }
     
     func getImage() async -> UIImage? {
-        guard let repo = searchVC.repository else {
+        guard let repo = repository else {
             return nil
         }
         
