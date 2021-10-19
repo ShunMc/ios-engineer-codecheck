@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  SearchViewController.swift
 //  iOSEngineerCodeCheck
 //
 //  Created by 史 翔新 on 2020/04/20.
@@ -12,17 +12,8 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    private let searchUrl = "https://api.github.com/search/repositories?q=";
-    
-    private var repogitories: [Repogitory]=[]
-    private var selectedIndex: Int!
+    private var repositoryPresenter: RepositoryPresenter = RepositoryPresenter()
     private var task: Task<Void, Error>?
-    
-    var repogitory: Repogitory {
-        get {
-            return repogitories[selectedIndex]
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,55 +28,28 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         task = Task {
             let searchWord = searchBar.text!
-            
-            if searchWord.count == 0 {
-                return
-            }
-
-            guard let encodedWord = searchWord.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-                return
-            }
-            guard let url = URL(string:"\(searchUrl)\(encodedWord)") else {
-                return
-            }
-            guard let (data, _) = try? await URLSession.shared.data(from: url) else {
-                return
-            }
-            guard let repogitories = try? JSONDecoder().decode(Repogitories.self, from: data) else {
-                return
-            }
-            self.repogitories = repogitories.items
+            await repositoryPresenter.request(searchWord)
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier != "Detail" {
-            return
-        }
-        guard let dst = segue.destination as? RepogitoryViewController else {
-            return
-        }
-        dst.searchVC = self
-    }
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repogitories.count
+        return repositoryPresenter.repositories.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        let repo = repogitories[indexPath.row]
+        let repo = repositoryPresenter.repositories[indexPath.row]
         cell.textLabel?.text = repo.full_name
         cell.detailTextLabel?.text = repo.language
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndex = indexPath.row
-        performSegue(withIdentifier: "Detail", sender: self)
+        let vc = RepositoryViewController(with: repositoryPresenter.repositories[indexPath.row])
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
 }

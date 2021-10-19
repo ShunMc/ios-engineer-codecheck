@@ -1,5 +1,5 @@
 //
-//  ViewController2.swift
+//  RepositoryViewController.swift
 //  iOSEngineerCodeCheck
 //
 //  Created by 史 翔新 on 2020/04/21.
@@ -7,26 +7,36 @@
 //
 
 import UIKit
+import Instantiate
+import InstantiateStandard
 
-class RepogitoryViewController: UIViewController {
+class RepositoryViewController: UIViewController, StoryboardInstantiatable {
+    
+    typealias Dependency = Repository
     
     @IBOutlet weak var thumbnailImageView: UIImageView!
     
-    @IBOutlet weak var repogitoryNameLabel: UILabel!
+    @IBOutlet weak var repositoryNameLabel: UILabel!
     @IBOutlet weak var languageLabel: UILabel!
     @IBOutlet weak var starsCountLabel: UILabel!
     @IBOutlet weak var watchersCountLabel: UILabel!
     @IBOutlet weak var forksCountLabel: UILabel!
     @IBOutlet weak var issuesCountLabel: UILabel!
     
-    var searchVC: SearchViewController!
+    private var repository: Repository!
+    
+    func inject(_ dependency: Repository) {
+        self.repository = dependency
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let repo = searchVC.repogitory
+        guard let repo = repository else {
+            return
+        }
         
-        repogitoryNameLabel.text = repo.full_name
+        repositoryNameLabel.text = repo.full_name
         if let language = repo.language {
             languageLabel.text = "Written in \(language)"
         }
@@ -35,22 +45,27 @@ class RepogitoryViewController: UIViewController {
         forksCountLabel.text = "\(repo.forks_count) forks"
         issuesCountLabel.text = "\(repo.open_issues_count) open issues"
         Task{
-            try await getImage()
+            guard let image = await getImage() else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.thumbnailImageView.image = image
+            }
         }
     }
     
-    func getImage() async throws {
-        let repo = searchVC.repogitory
-        let owner = repo.owner
-        guard let imgURL = URL(string: owner.avatar_url) else {
-            return
+    func getImage() async -> UIImage? {
+        guard let repo = repository else {
+            return nil
         }
         
-        let (data, _)  = try await URLSession.shared.data(from: imgURL)
-        let img = UIImage(data: data)
-        DispatchQueue.main.async {
-            self.thumbnailImageView.image = img
-        }
+        let owner = repo.owner
+        guard let imgURL = URL(string: owner.avatar_url),
+              let (data, _)  = try? await URLSession.shared.data(from: imgURL) else {
+                  return nil
+              }
+        
+        return UIImage(data: data)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
