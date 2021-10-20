@@ -10,15 +10,11 @@ import UIKit
 
 class SearchViewController: UITableViewController, UISearchBarDelegate {
     
-    @IBOutlet weak var searchBar: UISearchBar!
-    
     private var repositoryPresenter: RepositoryPresenter = RepositoryPresenter()
     private var task: Task<Void, Error>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
-        searchBar.delegate = self
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -33,6 +29,17 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
                 self.tableView.reloadData()
             }
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
+        searchBar.delegate = self
+        return searchBar
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 44
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
