@@ -8,27 +8,24 @@
 
 import UIKit
 
-class SearchViewController: UITableViewController, UISearchBarDelegate {
+struct SearchResult {
+    var title: String
+    var detail: String
+}
+
+protocol SearchPresenter {
+    var numberOfElement: Int { get }
+    func update(_ searchText: String) async
+    func getElementByIndex(at: Int) -> SearchResult
+    func didSelectRow(at: Int) -> UIViewController
+}
+
+class SearchViewController: UITableViewController {
     
-    private var repositoryPresenter: RepositoryPresenter = RepositoryPresenter()
-    private var task: Task<Void, Error>?
+    private var presenter: SearchPresenter!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        task?.cancel()
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        task = Task {
-            let searchWord = searchBar.text!
-            await repositoryPresenter.request(searchWord)
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
+    func inject(presenter: SearchPresenter) {
+        self.presenter = presenter
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -43,20 +40,36 @@ class SearchViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repositoryPresenter.repositories.count
+        return presenter.numberOfElement
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let result = presenter.getElementByIndex(at: indexPath.row)
         let cell = UITableViewCell()
-        let repo = repositoryPresenter.repositories[indexPath.row]
-        cell.textLabel?.text = repo.full_name
-        cell.detailTextLabel?.text = repo.language
+        cell.textLabel?.text = result.title
+        cell.detailTextLabel?.text = result.detail
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = RepositoryViewController(with: repositoryPresenter.repositories[indexPath.row])
+        let vc = presenter.didSelectRow(at: indexPath.row)
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+}
+
+extension SearchViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        // 必ず存在する
+        let searchWord = searchBar.text!
+
+        Task {
+            await presenter.update(searchWord)
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
     }
     
 }
