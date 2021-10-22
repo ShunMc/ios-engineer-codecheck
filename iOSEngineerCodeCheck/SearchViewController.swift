@@ -11,12 +11,18 @@ import UIKit
 struct SearchResult {
     var title: String
     var detail: String
+    
+    init(title: String, detail: String)
+    {
+        self.title = title
+        self.detail = detail
+    }
 }
 
 protocol SearchPresenter {
     var numberOfElement: Int { get }
     func update(_ searchText: String) async
-    func getElementByIndex(at: Int) -> SearchResult
+    func getElement(at index: Int) -> SearchResult
     func didSelectRow(at: Int) -> UIViewController
 }
 
@@ -26,6 +32,11 @@ class SearchViewController: UITableViewController {
     
     func inject(presenter: SearchPresenter) {
         self.presenter = presenter
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        inject(presenter: SearchRepositoryPresenter())
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -44,7 +55,7 @@ class SearchViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let result = presenter.getElementByIndex(at: indexPath.row)
+        let result = presenter.getElement(at: indexPath.row)
         let cell = UITableViewCell()
         cell.textLabel?.text = result.title
         cell.detailTextLabel?.text = result.detail
