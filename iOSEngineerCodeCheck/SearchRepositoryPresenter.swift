@@ -8,12 +8,19 @@
 
 import UIKit
 
+protocol SearchRepositoryModelProtocol {
+    func update(_ searchText: String) async throws -> (repositories: [Repository], results: [SearchResult])
+}
+
 class SearchRepositoryPresenter: SearchPresenter {
-    
-    private let searchUrl = "https://api.github.com/search/repositories?q=";
     
     private var repositories: [Repository] = []
     private var results: [SearchResult] = []
+    private var model: SearchRepositoryModelProtocol
+    
+    init(model: SearchRepositoryModelProtocol) {
+        self.model = model
+    }
     
     var numberOfElement: Int {
         get { return repositories.count }
@@ -28,34 +35,11 @@ class SearchRepositoryPresenter: SearchPresenter {
     }
     
     func update(_ searchText: String) async {
-        if searchText.count == 0 {
-            print("searchText.count == 0")
+        guard let (repositories, results) = try? await model.update(searchText) else {
             return
         }
-        
-        guard let encodedWord = searchText.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            print("encodedWord")
-            return
-        }
-        guard let url = URL(string:"\(searchUrl)\(encodedWord)") else {
-            print("url")
-            return
-        }
-        guard let (data, _) = try? await URLSession.shared.data(from: url) else {
-            print("data, _")
-            return
-        }
-        guard let repositories = try? JSONDecoder().decode(Repositories.self, from: data) else {
-            print("repositories")
-            return
-        }
-        self.repositories = repositories.items
-        
-        results = []
-        for repository in self.repositories
-        {
-            results.append(SearchResult(title: repository.full_name, detail: repository.language ?? ""))
-        }
+        self.repositories = repositories
+        self.results = results
     }
     
 }

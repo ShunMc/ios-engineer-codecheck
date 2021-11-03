@@ -39,7 +39,11 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        inject(presenter: SearchRepositoryPresenter())
+        
+        let model = SearchRepositoryModel()
+        let presenter = SearchRepositoryPresenter(model: model)
+        inject(presenter: presenter)
+        
         searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
         searchBar.delegate = self
         tableView.delegate = self
