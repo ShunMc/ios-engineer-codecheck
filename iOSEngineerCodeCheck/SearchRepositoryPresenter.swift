@@ -1,5 +1,5 @@
 //
-//  RepositoryPresenter.swift
+//  SearchRepositoryPresenter.swift
 //  iOSEngineerCodeCheck
 //
 //  Created by Matsunobu Shun on 2021/10/19.
