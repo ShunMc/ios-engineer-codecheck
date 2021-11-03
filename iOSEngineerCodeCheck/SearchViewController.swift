@@ -26,7 +26,10 @@ protocol SearchPresenter {
     func didSelectRow(at: Int) -> UIViewController
 }
 
-class SearchViewController: UITableViewController {
+class SearchViewController: UIViewController {
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var tableView: UITableView!
     
     private var presenter: SearchPresenter!
     
@@ -37,34 +40,35 @@ class SearchViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         inject(presenter: SearchRepositoryPresenter())
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let searchBar = UISearchBar()
         searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
         searchBar.delegate = self
-        return searchBar
+        tableView.delegate = self
+        tableView.dataSource = self
     }
     
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 44
+}
+
+extension SearchViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = presenter.didSelectRow(at: indexPath.row)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+}
+
+extension SearchViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return presenter.numberOfElement
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let result = presenter.getElement(at: indexPath.row)
         let cell = UITableViewCell()
         cell.textLabel?.text = result.title
         cell.detailTextLabel?.text = result.detail
         return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = presenter.didSelectRow(at: indexPath.row)
-        self.navigationController?.pushViewController(vc, animated: true)
     }
     
 }

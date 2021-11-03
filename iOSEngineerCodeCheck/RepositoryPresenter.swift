@@ -29,15 +29,26 @@ class SearchRepositoryPresenter: SearchPresenter {
     
     func update(_ searchText: String) async {
         if searchText.count == 0 {
+            print("searchText.count == 0")
             return
         }
         
-        guard let encodedWord = searchText.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
-              let url = URL(string:"\(searchUrl)\(encodedWord)"),
-              let (data, _) = try? await URLSession.shared.data(from: url),
-              let repositories = try? JSONDecoder().decode(Repositories.self, from: data) else {
-                  return
-              }
+        guard let encodedWord = searchText.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+            print("encodedWord")
+            return
+        }
+        guard let url = URL(string:"\(searchUrl)\(encodedWord)") else {
+            print("url")
+            return
+        }
+        guard let (data, _) = try? await URLSession.shared.data(from: url) else {
+            print("data, _")
+            return
+        }
+        guard let repositories = try? JSONDecoder().decode(Repositories.self, from: data) else {
+            print("repositories")
+            return
+        }
         self.repositories = repositories.items
         
         results = []
