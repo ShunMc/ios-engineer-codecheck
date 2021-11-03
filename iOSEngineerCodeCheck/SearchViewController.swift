@@ -69,7 +69,7 @@ extension SearchViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let result = presenter.getElement(at: indexPath.row)
-        let cell = UITableViewCell()
+        let cell = UITableViewCell.init(style: UITableViewCell.CellStyle.value1, reuseIdentifier: String(indexPath.row))
         cell.textLabel?.text = result.title
         cell.detailTextLabel?.text = result.detail
         return cell
