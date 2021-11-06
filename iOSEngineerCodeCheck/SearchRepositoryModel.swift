@@ -13,21 +13,21 @@ class SearchRepositoryModel: SearchRepositoryModelProtocol {
     private let searchUrl = "https://api.github.com/search/repositories?q=";
     
     enum SearchError: Error {
-        case TextIsEmpty
+        case TextEmpty
         case EncodeFailed
-        case URL
+        case URLInvalid
     }
     
-    func update(_ searchText: String) async throws -> (repositories: [Repository], results: [SearchResult]) {
+    func fetch(_ searchText: String) async throws -> (repositories: [Repository], results: [SearchResult]) {
         if searchText.count == 0 {
-            throw SearchError.TextIsEmpty
+            throw SearchError.TextEmpty
         }
         
         guard let encodedWord = searchText.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             throw SearchError.EncodeFailed
         }
         guard let url = URL(string:"\(searchUrl)\(encodedWord)") else {
-            throw SearchError.URL
+            throw SearchError.URLInvalid
         }
         let (data, _) = try await URLSession.shared.data(from: url)
         let repositories = try JSONDecoder().decode(Repositories.self, from: data)

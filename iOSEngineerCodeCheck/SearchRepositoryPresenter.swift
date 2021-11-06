@@ -9,7 +9,7 @@
 import UIKit
 
 protocol SearchRepositoryModelProtocol {
-    func update(_ searchText: String) async throws -> (repositories: [Repository], results: [SearchResult])
+    func fetch(_ searchText: String) async throws -> (repositories: [Repository], results: [SearchResult])
 }
 
 class SearchRepositoryPresenter: SearchPresenter {
@@ -35,7 +35,7 @@ class SearchRepositoryPresenter: SearchPresenter {
     }
     
     func update(_ searchText: String) async {
-        guard let (repositories, results) = try? await model.update(searchText) else {
+        guard let (repositories, results) = try? await model.fetch(searchText) else {
             return
         }
         self.repositories = repositories
