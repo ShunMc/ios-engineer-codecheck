@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Instantiate
+import InstantiateStandard
 
 struct SearchResult {
     var title: String
@@ -26,23 +28,21 @@ protocol SearchPresenter {
     func didSelectRow(at: Int) -> UIViewController
 }
 
-class SearchViewController: UIViewController {
+class SearchViewController: UIViewController, StoryboardInstantiatable {
+    
+    typealias Dependency = SearchPresenter
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
     private var presenter: SearchPresenter!
     
-    func inject(presenter: SearchPresenter) {
-        self.presenter = presenter
+    func inject(_ dependency: SearchPresenter) {
+        self.presenter = dependency
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let model = SearchRepositoryModel()
-        let presenter = SearchRepositoryPresenter(model: model)
-        inject(presenter: presenter)
         
         searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
         searchBar.delegate = self

@@ -24,10 +24,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
         window.makeKeyAndVisible()
         
-        let storyboard = UIStoryboard(name: "SearchViewController", bundle: nil)
-        guard let viewController = storyboard.instantiateInitialViewController() else {
-            return
-        }
+        let model = SearchRepositoryModel()
+        let presenter = SearchRepositoryPresenter(model: model)
+        let viewController = SearchViewController(with: presenter)
         
         let navigationViewController = UINavigationController()
         navigationViewController.pushViewController(viewController, animated: false)
