@@ -35,7 +35,7 @@ class SearchRepositoryModel: SearchRepositoryModelProtocol {
         var results = [SearchResult]()
         for repository in repositories.items
         {
-            results.append(SearchResult(title: repository.full_name, detail: repository.language ?? ""))
+            results.append(SearchResult(title: repository.fullName, detail: repository.language ?? ""))
         }
         
         return (repositories.items, results)

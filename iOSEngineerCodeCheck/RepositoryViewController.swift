@@ -31,16 +31,16 @@ class RepositoryViewController: UIViewController, StoryboardInstantiatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        repositoryNameLabel.text = repository.full_name
+        repositoryNameLabel.text = repository.fullName
         if let language = repository.language {
             languageLabel.text = "Written in \(language)"
         }
-        starsCountLabel.text = "\(repository.stargazers_count) stars"
-        watchersCountLabel.text = "\(repository.watchers_count) watchers"
-        forksCountLabel.text = "\(repository.forks_count) forks"
-        issuesCountLabel.text = "\(repository.open_issues_count) open issues"
+        starsCountLabel.text = "\(repository.stargazersCount) stars"
+        watchersCountLabel.text = "\(repository.watchersCount) watchers"
+        forksCountLabel.text = "\(repository.forksCount) forks"
+        issuesCountLabel.text = "\(repository.openIssuesCount) open issues"
         Task{
-            guard let image = await ImageUtil.download(by: repository.owner.avatar_url) else {
+            guard let image = await ImageUtil.download(by: repository.owner.avatarUrl) else {
                 return
             }
             

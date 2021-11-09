@@ -13,15 +13,29 @@ struct Repositories: Decodable {
 }
 
 struct Repository: Decodable {
-    let full_name: String
+    let fullName: String
     let language: String?
-    let stargazers_count: Int
-    let watchers_count: Int
-    let forks_count: Int
-    let open_issues_count: Int
+    let stargazersCount: Int
+    let watchersCount: Int
+    let forksCount: Int
+    let openIssuesCount: Int
     let owner: Owner
+    
+    enum CodingKeys: String, CodingKey {
+        case fullName = "full_name"
+        case language
+        case stargazersCount = "stargazers_count"
+        case watchersCount = "watchers_count"
+        case forksCount = "forks_count"
+        case openIssuesCount = "open_issues_count"
+        case owner
+    }
 }
 
 struct Owner: Decodable {
-    let avatar_url: String
+    let avatarUrl: String
+    
+    enum CodingKeys: String, CodingKey {
+        case avatarUrl = "avatar_url"
+    }
 }
