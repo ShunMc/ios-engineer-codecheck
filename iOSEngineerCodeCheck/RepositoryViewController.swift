@@ -15,7 +15,6 @@ class RepositoryViewController: UIViewController, StoryboardInstantiatable {
     typealias Dependency = Repository
     
     @IBOutlet weak var thumbnailImageView: UIImageView!
-    
     @IBOutlet weak var repositoryNameLabel: UILabel!
     @IBOutlet weak var languageLabel: UILabel!
     @IBOutlet weak var starsCountLabel: UILabel!
@@ -32,46 +31,23 @@ class RepositoryViewController: UIViewController, StoryboardInstantiatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let repo = repository else {
-            return
-        }
-        
-        repositoryNameLabel.text = repo.full_name
-        if let language = repo.language {
+        repositoryNameLabel.text = repository.fullName
+        if let language = repository.language {
             languageLabel.text = "Written in \(language)"
         }
-        starsCountLabel.text = "\(repo.stargazers_count) stars"
-        watchersCountLabel.text = "\(repo.watchers_count) watchers"
-        forksCountLabel.text = "\(repo.forks_count) forks"
-        issuesCountLabel.text = "\(repo.open_issues_count) open issues"
+        starsCountLabel.text = "\(repository.stargazersCount) stars"
+        watchersCountLabel.text = "\(repository.watchersCount) watchers"
+        forksCountLabel.text = "\(repository.forksCount) forks"
+        issuesCountLabel.text = "\(repository.openIssuesCount) open issues"
         Task{
-            guard let image = await getImage() else {
+            guard let image = await ImageUtil.download(by: repository.owner.avatarUrl) else {
                 return
             }
+            
             DispatchQueue.main.async {
                 self.thumbnailImageView.image = image
             }
         }
-    }
-    
-    func getImage() async -> UIImage? {
-        guard let repo = repository else {
-            return nil
-        }
-        
-        let owner = repo.owner
-        guard let imgURL = URL(string: owner.avatar_url),
-              let (data, _)  = try? await URLSession.shared.data(from: imgURL) else {
-                  return nil
-              }
-        
-        return UIImage(data: data)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        self.thumbnailImageView.image = nil;
-        self.thumbnailImageView.layer.sublayers = nil;
-        self.thumbnailImageView = nil;
     }
     
 }

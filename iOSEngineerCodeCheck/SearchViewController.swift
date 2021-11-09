@@ -7,56 +7,88 @@
 //
 
 import UIKit
+import Instantiate
+import InstantiateStandard
 
-class SearchViewController: UITableViewController, UISearchBarDelegate {
+struct SearchResult {
+    var title: String
+    var detail: String
     
-    private var repositoryPresenter: RepositoryPresenter = RepositoryPresenter()
-    private var task: Task<Void, Error>?
+    init(title: String, detail: String)
+    {
+        self.title = title
+        self.detail = detail
+    }
+}
+
+protocol SearchPresenter {
+    var numberOfElement: Int { get }
+    func update(_ searchText: String) async
+    func getElement(at index: Int) -> SearchResult
+    func didSelectRow(at: Int) -> UIViewController
+}
+
+class SearchViewController: UIViewController, StoryboardInstantiatable {
+    
+    typealias Dependency = SearchPresenter
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var tableView: UITableView!
+    
+    private var presenter: SearchPresenter!
+    
+    func inject(_ dependency: SearchPresenter) {
+        self.presenter = dependency
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
+        searchBar.delegate = self
+        tableView.delegate = self
+        tableView.dataSource = self
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        task?.cancel()
+}
+
+extension SearchViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = presenter.didSelectRow(at: indexPath.row)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
+    
+}
+
+extension SearchViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return presenter.numberOfElement
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let result = presenter.getElement(at: indexPath.row)
+        let cell = UITableViewCell.init(style: UITableViewCell.CellStyle.value1, reuseIdentifier: String(indexPath.row))
+        cell.textLabel?.text = result.title
+        cell.detailTextLabel?.text = result.detail
+        return cell
+    }
+    
+}
+
+extension SearchViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        task = Task {
-            let searchWord = searchBar.text!
-            await repositoryPresenter.request(searchWord)
+        // 必ず存在する
+        let searchWord = searchBar.text!
+
+        Task {
+            await presenter.update(searchWord)
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "GitHubのリポジトリを検索できるよー"
-        searchBar.delegate = self
-        return searchBar
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 44
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repositoryPresenter.repositories.count
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-        let repo = repositoryPresenter.repositories[indexPath.row]
-        cell.textLabel?.text = repo.full_name
-        cell.detailTextLabel?.text = repo.language
-        return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = RepositoryViewController(with: repositoryPresenter.repositories[indexPath.row])
-        self.navigationController?.pushViewController(vc, animated: true)
     }
     
 }
